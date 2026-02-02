@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"strconv"
 )
@@ -48,7 +49,7 @@ func (c *Context) Query(key string) string {
 	return c.Req.URL.Query().Get(key)
 }
 
-func (c *Context) shouldBindJSON(j interface{}) error {
+func (c *Context) ShouldBindJSON(j interface{}) error {
 	body, err := io.ReadAll(c.Req.Body)
 	if err != nil {
 		return err
@@ -68,6 +69,31 @@ func (c *Context) shouldBindJSON(j interface{}) error {
 
 func (c *Context) PostForm(key string) string {
 	return c.Req.FormValue(key)
+}
+
+// 解析单文件
+func (c *Context) FormFile(key string) (multipart.File, *multipart.FileHeader, error) {
+	file, header, err := c.Req.FormFile(key)
+	if err != nil {
+		return nil, nil, err
+	}
+	return file, header, nil
+}
+
+// 解析多文件
+func (c *Context) MultipartForm(key string) ([]*multipart.FileHeader, error) {
+	err := c.Req.ParseMultipartForm(1024 * 1024 * 10)
+
+	if err != nil {
+		return nil, err
+	}
+	files := c.Req.MultipartForm.File[key]
+	if len(files) == 0 {
+		return nil, fmt.Errorf("no files uploaded")
+	}
+
+	return files, nil
+
 }
 
 /****** 返回 *******/
