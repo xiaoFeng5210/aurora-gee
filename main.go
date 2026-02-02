@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	auroragee "aurora-gee"
@@ -9,14 +8,14 @@ import (
 
 func main() {
 	r := auroragee.New()
-	r.GET("/", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "URL.Path = %q\n", req.URL.Path)
+	r.GET("/", func(c *auroragee.Context) {
+		c.HTML(http.StatusOK, "<h1>Hello World</h1>")
 	})
 
-	r.GET("/hello", func(w http.ResponseWriter, req *http.Request) {
-		for k, v := range req.Header {
-			fmt.Fprintf(w, "Header[%q] = %q\n", k, v)
-		}
+	r.GET("/hello", func(c *auroragee.Context) {
+		c.JSON(http.StatusOK, auroragee.H{
+			"value": "hello world",
+		})
 	})
 
 	err := r.Run(":9999")
