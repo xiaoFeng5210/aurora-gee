@@ -1,4 +1,4 @@
-package AuroraGee
+package auroragee
 
 import (
 	"net/http"

@@ -3,27 +3,23 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	auroragee "aurora-gee"
 )
 
-type AuroraGeeEngine struct{}
+func main() {
+	r := auroragee.New()
+	r.GET("/", func(w http.ResponseWriter, req *http.Request) {
+		fmt.Fprintf(w, "URL.Path = %q\n", req.URL.Path)
+	})
 
-func (engine *AuroraGeeEngine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/":
-		fmt.Fprintf(w, "URL.Path = %q\n", r.URL.Path)
-	case "/hello":
-		for k, v := range r.Header {
+	r.GET("/hello", func(w http.ResponseWriter, req *http.Request) {
+		for k, v := range req.Header {
 			fmt.Fprintf(w, "Header[%q] = %q\n", k, v)
 		}
-	default:
-		fmt.Fprintf(w, "404 NOT FOUND: %s\n", r.URL)
-	}
-}
+	})
 
-func main() {
-	engine := &AuroraGeeEngine{}
-
-	err := http.ListenAndServe(":9999", engine)
+	err := r.Run(":9999")
 	if err != nil {
 		panic(err)
 	}
