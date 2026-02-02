@@ -36,11 +36,12 @@ func (c *Context) SetHeader(key string, value string) {
 	c.Writer.Header().Set(key, value)
 }
 
-func (c *Context) String(code int, format string, values ...interface{}) {
-	c.SetHeader("Content-Type", "text/plain")
-	c.Status(code)
-	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
-}
+/****** 请求解析 *******/
+
+// TODO: 解析路由参数
+// func (c *Context) Param(key string) string {
+
+// }
 
 func (c *Context) Query(key string) string {
 	return c.Req.URL.Query().Get(key)
@@ -69,6 +70,12 @@ func (c *Context) PostForm(key string) string {
 }
 
 /****** 返回 *******/
+func (c *Context) String(code int, format string, values ...interface{}) {
+	c.SetHeader("Content-Type", "text/plain")
+	c.Status(code)
+	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
+}
+
 func (c *Context) JSON(code int, obj interface{}) {
 	c.SetHeader("Content-Type", "application/json")
 	c.Status(code)
@@ -76,5 +83,4 @@ func (c *Context) JSON(code int, obj interface{}) {
 	if err := encoder.Encode(obj); err != nil {
 		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 	}
-
 }
