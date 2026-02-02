@@ -25,14 +25,16 @@ func TestReadReflect(t *testing.T) {
 
 	fmt.Println(reflect.TypeOf(p))
 	fmt.Println(reflect.ValueOf(p))
+
+	fmt.Println(reflect.TypeOf(a).Kind())
 }
 
 func TestWriteReflect(t *testing.T) {
-	var a interface{} = map[string]string{
-		"name": "John",
-		"age":  "20",
-	}
+	// var a interface{} = map[string]string{
+	// 	"name": "John",
+	// 	"age":  "20",
+	// }
 
-	aValue := reflect.ValueOf(&a).Elem()
-	aValue.SetString("name")
+	// aValue := reflect.ValueOf(&a).Elem()
+	// aValue.SetString("name")
 }
