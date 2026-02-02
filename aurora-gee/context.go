@@ -87,6 +87,7 @@ func (c *Context) MultipartForm(key string) ([]*multipart.FileHeader, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	files := c.Req.MultipartForm.File[key]
 	if len(files) == 0 {
 		return nil, fmt.Errorf("no files uploaded")
