@@ -1,6 +1,11 @@
 package auroragee
 
-import "net/http"
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
 
 type H map[string]interface{}
 
@@ -31,10 +36,45 @@ func (c *Context) SetHeader(key string, value string) {
 	c.Writer.Header().Set(key, value)
 }
 
-func (c *Context) PostForm(key string) string {
-	return c.Req.FormValue(key)
+func (c *Context) String(code int, format string, values ...interface{}) {
+	c.SetHeader("Content-Type", "text/plain")
+	c.Status(code)
+	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
 }
 
 func (c *Context) Query(key string) string {
 	return c.Req.URL.Query().Get(key)
+}
+
+func (c *Context) shouldBindJSON(j interface{}) error {
+	body, err := io.ReadAll(c.Req.Body)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		c.Req.Body.Close()
+	}()
+
+	err = json.Unmarshal(body, j)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Context) PostForm(key string) string {
+	return c.Req.FormValue(key)
+}
+
+/****** 返回 *******/
+func (c *Context) JSON(code int, obj interface{}) {
+	c.SetHeader("Content-Type", "application/json")
+	c.Status(code)
+	encoder := json.NewEncoder(c.Writer)
+	if err := encoder.Encode(obj); err != nil {
+		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
+	}
+
 }
