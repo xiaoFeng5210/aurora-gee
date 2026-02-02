@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 type H map[string]interface{}
@@ -83,4 +84,17 @@ func (c *Context) JSON(code int, obj interface{}) {
 	if err := encoder.Encode(obj); err != nil {
 		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func (c *Context) Data(code int, data []byte) {
+	c.SetHeader("Content-Type", "application/octet-stream")
+	c.SetHeader("Content-Length", strconv.Itoa(len(data)))
+	c.Status(code)
+	c.Writer.Write(data)
+}
+
+func (c *Context) HTML(code int, html string) {
+	c.SetHeader("Content-Type", "text/html")
+	c.Status(code)
+	c.Writer.Write([]byte(html))
 }
