@@ -27,6 +27,7 @@ func TestReadReflect(t *testing.T) {
 	fmt.Println(reflect.ValueOf(p))
 
 	fmt.Println(reflect.TypeOf(a).Kind())
+	fmt.Println(reflect.ValueOf(p).FieldByName("Name"))
 }
 
 func TestWriteReflect(t *testing.T) {
